@@ -1,0 +1,487 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Favorite Songs</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #121212;
+            color: #ffffff;
+            overflow-x: hidden; /* Prevent horizontal scrollbar */
+        }
+
+        a {
+            color: #1db954;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* Header Styles */
+        header {
+            background-color: #191919;
+            padding: 10px 0;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid #282828;
+        }
+
+        nav ul {
+            padding: 0;
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        nav ul li {
+            margin: 0 15px;
+        }
+
+        nav ul li a {
+            color: #ffffff;
+            font-weight: bold;
+            padding: 8px 12px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        nav ul li a:hover {
+            background-color: #282828;
+            text-decoration: none;
+        }
+
+        #search-bar {
+            padding: 8px;
+            border-radius: 20px;
+            border: none;
+            margin-left: 15px;
+            width: 250px;
+            background-color: #282828;
+            color: #ffffff;
+        }
+
+        /* Main Content Styles */
+        main {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .song-library {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .song-card {
+            background-color: #191919;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+
+        .song-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .song-card img {
+            width: 100%;
+            max-width: 180px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .song-title {
+            font-weight: bold;
+            color: #ffffff;
+            margin-bottom: 5px;
+        }
+
+        .artist-name {
+            color: #b3b3b3;
+            font-size: 0.9em;
+        }
+
+        /* Music Player Styles */
+        .music-player {
+            background-color: #191919;
+            padding: 15px;
+            border-top: 1px solid #282828;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 1000;
+        }
+
+        .player-controls {
+            display: flex;
+            align-items: center;
+        }
+
+        .player-controls button {
+            background: none;
+            border: none;
+            color: #ffffff;
+            font-size: 20px;
+            margin: 0 10px;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .player-controls button:hover {
+            color: #1db954;
+        }
+
+        .volume-control {
+            display: flex;
+            align-items: center;
+        }
+
+        .volume-control input[type="range"] {
+            margin-left: 10px;
+            cursor: pointer;
+        }
+
+        /* Lyrics Display Styles */
+        .lyrics-container {
+            background-color: #191919;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            width: 100%;
+            max-width: 800px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            display: none; /* Initially hidden */
+        }
+
+        .lyrics-line {
+            margin: 10px 0;
+            transition: color 0.3s ease;
+        }
+
+        .current-lyrics {
+            color: #1db954;
+            font-weight: bold;
+        }
+
+        /* Footer Styles */
+        footer {
+            background-color: #191919;
+            padding: 20px 0;
+            text-align: center;
+            border-top: 1px solid #282828;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        footer ul {
+            padding: 0;
+            list-style: none;
+            display: flex;
+            justify-content: center;
+        }
+
+        footer ul li {
+            margin: 0 15px;
+        }
+
+        footer ul li a {
+            color: #ffffff;
+            transition: color 0.3s ease;
+        }
+
+        footer ul li a:hover {
+            color: #1db954;
+            text-decoration: none;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .song-library {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+
+            .music-player {
+                flex-direction: column;
+                padding: 10px;
+            }
+
+            .player-controls {
+                margin-bottom: 10px;
+            }
+
+            .volume-control {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="#">Home</a></li>
+                <li><a href="#">Library</a></li>
+                <li><a href="#">Playlists</a></li>
+                <li><input type="text" id="search-bar" placeholder="Search..."></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="song-library">
+            <!-- Song cards will be added here via JavaScript -->
+        </div>
+
+        <div class="lyrics-container">
+            <!-- Lyrics will be displayed here -->
+        </div>
+    </main>
+
+    <div class="music-player">
+        <div class="player-controls">
+            <button id="prev-btn" aria-label="Previous Song">⏮</button>
+            <button id="play-pause-btn" aria-label="Play/Pause">▶</button>
+            <button id="next-btn" aria-label="Next Song">⏭</button>
+        </div>
+        <div class="volume-control">
+            <label for="volume-slider" style="color: #ffffff;">Volume:</label>
+            <input type="range" id="volume-slider" min="0" max="1" step="0.1" value="1">
+        </div>
+    </div>
+
+    <footer>
+        <ul>
+            <li><a href="#">About</a></li>
+            <li><a href="#">Contact</a></li>
+            <li><a href="#">Privacy Policy</a></li>
+        </ul>
+    </footer>
+
+    <script>
+        // Song data (replace with your actual song data)
+        const songs = [
+            {
+                title: "Song 1",
+                artist: "Artist 1",
+                image: "https://picsum.photos/200/200?random=1",
+                audio: "song1.mp3",
+                lyrics: [
+                    "Line 1 of song 1",
+                    "Line 2 of song 1",
+                    "Line 3 of song 1",
+                    // Add more lines as needed
+                ]
+            },
+            {
+                title: "Song 2",
+                artist: "Artist 2",
+                image: "https://picsum.photos/200/200?random=2",
+                audio: "song2.mp3",
+                lyrics: [
+                    "Line 1 of song 2",
+                    "Line 2 of song 2",
+                    "Line 3 of song 2",
+                    // Add more lines as needed
+                ]
+            },
+            {
+                title: "Song 3",
+                artist: "Artist 3",
+                image: "https://picsum.photos/200/200?random=3",
+                audio: "song3.mp3",
+                lyrics: [
+                    "Line 1 of song 3",
+                    "Line 2 of song 3",
+                    "Line 3 of song 3",
+                ]
+            },
+            {
+                title: "Song 4",
+                artist: "Artist 4",
+                image: "https://picsum.photos/200/200?random=4",
+                audio: "song4.mp3",
+                lyrics: [
+                    "Line 1 of song 4",
+                    "Line 2 of song 4",
+                    "Line 3 of song 4",
+                ]
+            },
+            {
+                title: "Song 5",
+                artist: "Artist 5",
+                image: "https://picsum.photos/200/200?random=5",
+                audio: "song5.mp3",
+                lyrics: [
+                    "Line 1 of song 5",
+                    "Line 2 of song 5",
+                    "Line 3 of song 5",
+                ]
+            },
+            {
+                title: "Song 6",
+                artist: "Artist 6",
+                image: "https://picsum.photos/200/200?random=6",
+                audio: "song6.mp3",
+                lyrics: [
+                    "Line 1 of song 6",
+                    "Line 2 of song 6",
+                    "Line 3 of song 6",
+                ]
+            }
+            // Add more songs as needed
+        ];
+
+        let currentSongIndex = 0;
+        let audio = new Audio();
+        let lyricsInterval;
+
+        // DOM Elements
+        const songLibrary = document.querySelector('.song-library');
+        const playPauseBtn = document.getElementById('play-pause-btn');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const volumeSlider = document.getElementById('volume-slider');
+        const lyricsContainer = document.querySelector('.lyrics-container');
+        const searchBar = document.getElementById('search-bar');
+
+        // Function to create song cards
+        function createSongCards() {
+            songLibrary.innerHTML = ''; // Clear existing cards
+            songs.forEach((song, index) => {
+                const songCard = document.createElement('div');
+                songCard.classList.add('song-card');
+                songCard.innerHTML = `
+                    <img src="${song.image}" alt="${song.title} Album Art">
+                    <div class="song-title">${song.title}</div>
+                    <div class="artist-name">${song.artist}</div>
+                `;
+                songCard.addEventListener('click', () => playSong(index));
+                songLibrary.appendChild(songCard);
+            });
+        }
+
+        // Function to play a song
+        function playSong(index) {
+            currentSongIndex = index;
+            audio.src = songs[currentSongIndex].audio;
+            audio.play();
+            playPauseBtn.textContent = '⏸'; // Change to pause icon
+            displayLyrics();
+        }
+
+        // Function to display lyrics
+        function displayLyrics() {
+            lyricsContainer.innerHTML = ''; // Clear previous lyrics
+            lyricsContainer.style.display = 'block'; // Show lyrics container
+
+            const lyrics = songs[currentSongIndex].lyrics;
+            lyrics.forEach((line, index) => {
+                const lyricsLine = document.createElement('div');
+                lyricsLine.classList.add('lyrics-line');
+                lyricsLine.textContent = line;
+                lyricsContainer.appendChild(lyricsLine);
+            });
+
+            // Synchronize lyrics
+            let lineIndex = 0;
+            clearInterval(lyricsInterval); // Clear any existing interval
+            lyricsInterval = setInterval(() => {
+                if (lineIndex < lyrics.length) {
+                    // Remove 'current-lyrics' class from all lines
+                    document.querySelectorAll('.lyrics-line').forEach(line => {
+                        line.classList.remove('current-lyrics');
+                    });
+
+                    // Highlight the current line
+                    const currentLine = document.querySelector(`.lyrics-line:nth-child(${lineIndex + 1})`);
+                    if (currentLine) {
+                        currentLine.classList.add('current-lyrics');
+                    }
+
+                    lineIndex++;
+                } else {
+                    clearInterval(lyricsInterval);
+                }
+            }, 2000); // Adjust timing as needed
+        }
+
+        // Event Listeners for Player Controls
+        playPauseBtn.addEventListener('click', () => {
+            if (audio.paused) {
+                audio.play();
+                playPauseBtn.textContent = '⏸';
+            } else {
+                audio.pause();
+                playPauseBtn.textContent = '▶';
+            }
+        });
+
+        prevBtn.addEventListener('click', () => {
+            currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
+            playSong(currentSongIndex);
+        });
+
+        nextBtn.addEventListener('click', () => {
+            currentSongIndex = (currentSongIndex + 1) % songs.length;
+            playSong(currentSongIndex);
+        });
+
+        volumeSlider.addEventListener('input', () => {
+            audio.volume = volumeSlider.value;
+        });
+
+        // Search Functionality
+        searchBar.addEventListener('input', () => {
+            const searchTerm = searchBar.value.toLowerCase();
+            const filteredSongs = songs.filter(song =>
+                song.title.toLowerCase().includes(searchTerm) ||
+                song.artist.toLowerCase().includes(searchTerm)
+            );
+            displayFilteredSongs(filteredSongs);
+        });
+
+        // Function to display filtered songs
+        function displayFilteredSongs(filteredSongs) {
+            songLibrary.innerHTML = ''; // Clear existing cards
+            filteredSongs.forEach((song, index) => {
+                const songCard = document.createElement('div');
+                songCard.classList.add('song-card');
+                songCard.innerHTML = `
+                    <img src="${song.image}" alt="${song.title} Album Art">
+                    <div class="song-title">${song.title}</div>
+                    <div class="artist-name">${song.artist}</div>
+                `;
+                songCard.addEventListener('click', () => playSong(songs.indexOf(song)));
+                songLibrary.appendChild(songCard);
+            });
+        }
+
+        // Initialize the page
+        createSongCards();
+    </script>
+</body>
+</html>
